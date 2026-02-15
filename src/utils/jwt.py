@@ -37,7 +37,7 @@ def decode_token(token: str, expected_token_type: str):
         if token_type != expected_token_type:
             raise InvalidTokenException("Invalid token type")
         
-        return payload.get("sub")
+        return payload
     
     except jwt.ExpiredSignatureError:
         raise TokenExpiredException("Token expired")
