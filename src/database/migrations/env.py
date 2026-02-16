@@ -9,7 +9,7 @@ from src.config import settings
 
 from src.auth.models import User
 from src.database.db import Base
-
+from src.bus.models import Bus
 
 config = context.config
 
