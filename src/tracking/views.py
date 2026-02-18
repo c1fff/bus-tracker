@@ -1,32 +1,30 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends
 from src.auth.dependencies import get_current_user
+
 from .schemas import TrackPoint
-from .services import require_driver
-import redis.asyncio as redis
+from .repository import TrackingRepository
+from .services import TrackingService
 
 router = APIRouter(prefix="/tracking", tags=["Tracking"])
 
 @router.post("/point")
-async def add_point(point: TrackPoint, bus_id: str, request: Request, current_user = Depends(get_current_user)):
-    # Проверяем роль
-    require_driver(current_user)
+async def add_point(point: TrackPoint, bus_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    repo = TrackingRepository(request.app.state.redis)
+    service = TrackingService(repo)
 
-    r = request.app.state.redis
-    user_id = current_user.get("sub")
-    key = f"bus:last:{bus_id}"
-    await r.set(key, point.model_dump_json(), ex=120)
+    await service.add_point(point=point, bus_id=bus_id, current_user=current_user)
 
-    return {"message": "ok", "data": [point, bus_id]}
+    return {"message": "ok"}
 
-@router.get("/bus/{bus_id}/last", response_model=TrackPoint)
+@router.get("/bus/{bus_id}/last")
 async def get_last(bus_id: str, request: Request):
-    r = request.app.state.redis
-    key = f"bus:last:{bus_id}"
-    raw = await r.get(key)
+    repo = TrackingRepository(request.app.state.redis)
+    service = TrackingService(repo)
 
-    #later add raise 404, when we get bus tables(if bus_id is invalid)
+    point = await service.get_last(bus_id=bus_id)
 
-    if not raw:
-        return { "bus_id": "12", "online": False, "data": None }
-    return {"bus_id": "12", "online": True, "data": TrackPoint}
+    if not point:
+        return {"bus_id": bus_id, "online": False, "data": None}
+
+    return {"bus_id": bus_id, "online": True, "data": point}
 

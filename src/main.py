@@ -8,6 +8,7 @@ import redis.asyncio as redis
 
 from src.auth.views import router as auth_router
 from src.tracking.views import router as tracking_router
+from src.bus.views import router as bus_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -57,6 +58,7 @@ app.openapi = custom_openapi
 
 app.include_router(auth_router)
 app.include_router(tracking_router)
+app.include_router(bus_router)
 
 
 
