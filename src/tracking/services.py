@@ -10,9 +10,12 @@ class TrackingService:
     def __init__(self, repo: TrackingRepository):
         self.repo = repo
 
-    async def add_point(self, *, point: TrackPoint, bus_id: str, current_user: dict) -> None:
+    async def add_point(self, *, point: TrackPoint, unit_code: str, route_number: str, current_user: dict) -> None:
         require_driver(current_user)
-        await self.repo.set_last_point(bus_id, point, ttl=120)
+        await self.repo.set_last_point(unit_code, route_number, point, ttl=120)
 
-    async def get_last(self, *, bus_id: str) -> TrackPoint | None:
-        return await self.repo.get_last_point(bus_id)
+    async def get_last(self, *, unit_code: str) -> TrackPoint | None:
+        return await self.repo.get_last_point(unit_code)
+
+    async def get_route(self, *, route_number: str):
+        return await self.repo.get_route_points(route_number)

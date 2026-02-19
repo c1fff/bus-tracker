@@ -14,7 +14,6 @@ class BusService:
 
         bus = Bus(
             route_number=data.route_number,
-            route_variant=data.route_variant,
             unit_code=data.unit_code,
             is_active=True,
         )

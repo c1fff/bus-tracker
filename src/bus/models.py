@@ -12,9 +12,8 @@ class Bus(Base):
 
     # what a user sees(just bus num)
     route_number = Column(String(20), nullable=False)         # "1", "4", "10"
-    route_variant = Column(String(20), nullable=True)         #"A" or "B"
     # uniq code of bus
-    unit_code = Column(String(50), unique=True, nullable=False)  # example: 1-A-03
+    unit_code = Column(String(50), unique=True, nullable=False)  # example: 1-01
 
     is_active = Column(Boolean, default=True)
 
